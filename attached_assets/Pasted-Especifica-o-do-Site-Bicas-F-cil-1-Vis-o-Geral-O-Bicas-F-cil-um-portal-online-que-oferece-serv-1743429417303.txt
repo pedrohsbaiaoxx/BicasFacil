@@ -1,0 +1,159 @@
+Especificação do Site Bicas Fácil
+
+1. Visão Geral
+
+O Bicas Fácil é um portal online que oferece serviços, produtos e informações úteis sobre a cidade de Bicas. O objetivo é conectar moradores e visitantes aos melhores serviços, profissionais, imóveis, veículos e órgãos públicos da região.
+
+2. Estrutura do Site
+
+2.1. Menu Principal
+
+Serviços
+
+Imóveis
+
+Veículos
+
+Loja
+
+IA Hub
+
+Mídia
+
+Profissionais
+
+Órgãos Públicos
+
+Educação
+
+Lazer
+
+Saúde
+
+Cargos Públicos
+
+Temperatura Atual (Ex: 24°C)
+
+Cadastrar Profissional
+
+Entrar (com ícone de login)
+
+2.2. Tela Principal
+
+Banner Inicial:
+
+Texto: Bem-vindo ao Bicas Fácil - Encontre os melhores serviços e produtos da cidade.
+
+Botão: Explorar
+
+Prestadores de Serviços:
+
+Lista com categorias e número de profissionais:
+
+Pintores (12 profissionais) [Ver todos]
+
+Encanadores (8 profissionais) [Ver todos]
+
+Engenheiros (15 profissionais) [Ver todos]
+
+Manicures (20 profissionais) [Ver todos]
+
+Cuidadores (5 profissionais) [Ver todos]
+
+Pedreiros (18 profissionais) [Ver todos]
+
+Serviços em Destaque:
+
+Exibição dos serviços mais procurados da semana.
+
+Produtos em Destaque:
+
+Listagem de produtos:
+
+Produto 1
+
+Descrição do produto 1
+
+Preço: R$ 99,90
+
+Avaliação: 4.5 estrelas
+
+Botão: Comprar
+
+[Ver Todos]
+
+Imóveis em Destaque:
+
+Exibição das melhores oportunidades do mercado imobiliário.
+
+Veículos em Destaque:
+
+Exibição dos melhores negócios da região.
+
+2.3. Serviços Públicos
+
+Prefeitura Municipal
+
+Câmara de Vereadores
+
+Feira Livre (Sábados, das 7h às 12h - Centro)
+
+Escolas:
+
+E.E. Professor Joaquim Ribeiro de Carvalho (Estadual)
+
+E.E. Prefeito Joaquim Augusto Ribeiro de Carvalho (Estadual)
+
+Colégio Sagrado Coração de Jesus (Particular)
+
+Instituto Educacional São José (Particular)
+
+2.4. Lazer e Entretenimento
+
+Esportes:
+
+BTB Arena - Beach Sports (Beach Tennis, aulas, iluminação noturna)
+
+CT Bicas (Academia, Personal Trainer, Musculação)
+
+Quadra Poliesportiva Municipal (Futsal, Basquete, Vôlei)
+
+Campo de Futebol (Bairro São José, arquibancada)
+
+Academia ao Ar Livre (Praça Central)
+
+Espaços para Festas:
+
+Salão de Festas 1 (Centro, 200 pessoas)
+
+Chácara Eventos (Zona Rural, 300 pessoas)
+
+Entretenimento:
+
+Centro Cultural
+
+Praça de Eventos
+
+2.5. IA Hub
+
+Campo de busca para digitar perguntas para assistentes virtuais.
+
+Botão: Consultar todas as IAs
+
+2.6. Contatos de Emergência
+
+Bombeiros: 193
+
+Polícia: 190
+
+SAMU: 192
+
+2.7. Rodapé
+
+Entre em Contato: contato@bicasfacil.com
+
+Newsletter:
+
+Campo de e-mail para inscrição
+
+Botão: Inscrever
