@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { config } from "./config";
 import {
   insertUserSchema,
   insertServiceCategorySchema,

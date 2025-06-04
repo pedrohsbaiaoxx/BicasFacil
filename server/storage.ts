@@ -1,3 +1,5 @@
+import { db } from './db';
+import { eq } from 'drizzle-orm';
 import {
   users, type User, type InsertUser,
   serviceCategories, type ServiceCategory, type InsertServiceCategory,
@@ -52,201 +54,157 @@ export interface IStorage {
   createLeisureSpot(spot: InsertLeisureSpot): Promise<LeisureSpot>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private serviceCategories: Map<number, ServiceCategory>;
-  private professionals: Map<number, Professional>;
-  private products: Map<number, Product>;
-  private properties: Map<number, Property>;
-  private vehicles: Map<number, Vehicle>;
-  private publicServices: Map<number, PublicService>;
-  private leisureSpots: Map<number, LeisureSpot>;
-  
-  private currentUserId: number;
-  private currentServiceCategoryId: number;
-  private currentProfessionalId: number;
-  private currentProductId: number;
-  private currentPropertyId: number;
-  private currentVehicleId: number;
-  private currentPublicServiceId: number;
-  private currentLeisureSpotId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.serviceCategories = new Map();
-    this.professionals = new Map();
-    this.products = new Map();
-    this.properties = new Map();
-    this.vehicles = new Map();
-    this.publicServices = new Map();
-    this.leisureSpots = new Map();
-    
-    this.currentUserId = 1;
-    this.currentServiceCategoryId = 1;
-    this.currentProfessionalId = 1;
-    this.currentProductId = 1;
-    this.currentPropertyId = 1;
-    this.currentVehicleId = 1;
-    this.currentPublicServiceId = 1;
-    this.currentLeisureSpotId = 1;
-
-    // Initialize with some service categories
-    this.seedServiceCategories();
-  }
-
+export class DbStorage implements IStorage {
   // Users
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async createUser(user: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(user).returning();
+    return result[0];
   }
 
   // Service Categories
   async getServiceCategories(): Promise<ServiceCategory[]> {
-    return Array.from(this.serviceCategories.values());
+    return await db.select().from(serviceCategories);
   }
 
   async getServiceCategoryBySlug(slug: string): Promise<ServiceCategory | undefined> {
-    return Array.from(this.serviceCategories.values()).find(
-      (category) => category.slug === slug,
-    );
+    const result = await db.select().from(serviceCategories).where(eq(serviceCategories.slug, slug));
+    return result[0];
   }
 
   async createServiceCategory(category: InsertServiceCategory): Promise<ServiceCategory> {
-    const id = this.currentServiceCategoryId++;
-    const newCategory: ServiceCategory = { ...category, id };
-    this.serviceCategories.set(id, newCategory);
-    return newCategory;
+    const result = await db.insert(serviceCategories).values(category).returning();
+    return result[0];
   }
 
   // Professionals
   async getProfessionals(): Promise<Professional[]> {
-    return Array.from(this.professionals.values());
+    return await db.select().from(professionals);
   }
 
   async getProfessionalsByCategory(categoryId: number): Promise<Professional[]> {
-    return Array.from(this.professionals.values()).filter(
-      (professional) => professional.categoryId === categoryId,
-    );
+    return await db.select().from(professionals).where(eq(professionals.categoryId, categoryId));
   }
 
   async getProfessional(id: number): Promise<Professional | undefined> {
-    return this.professionals.get(id);
+    const result = await db.select().from(professionals).where(eq(professionals.id, id));
+    return result[0];
   }
 
   async createProfessional(professional: InsertProfessional): Promise<Professional> {
-    const id = this.currentProfessionalId++;
-    const newProfessional: Professional = { ...professional, id };
-    this.professionals.set(id, newProfessional);
-    return newProfessional;
+    const result = await db.insert(professionals).values(professional).returning();
+    return result[0];
   }
 
   // Products
   async getProducts(): Promise<Product[]> {
-    return Array.from(this.products.values());
+    return await db.select().from(products);
   }
 
   async getProduct(id: number): Promise<Product | undefined> {
-    return this.products.get(id);
+    const result = await db.select().from(products).where(eq(products.id, id));
+    return result[0];
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
-    const id = this.currentProductId++;
-    const newProduct: Product = { ...product, id };
-    this.products.set(id, newProduct);
-    return newProduct;
+    const result = await db.insert(products).values(product).returning();
+    return result[0];
   }
 
   // Properties
   async getProperties(): Promise<Property[]> {
-    return Array.from(this.properties.values());
+    return await db.select().from(properties);
   }
 
   async getProperty(id: number): Promise<Property | undefined> {
-    return this.properties.get(id);
+    const result = await db.select().from(properties).where(eq(properties.id, id));
+    return result[0];
   }
 
   async createProperty(property: InsertProperty): Promise<Property> {
-    const id = this.currentPropertyId++;
-    const newProperty: Property = { ...property, id };
-    this.properties.set(id, newProperty);
-    return newProperty;
+    const result = await db.insert(properties).values(property).returning();
+    return result[0];
   }
 
   // Vehicles
   async getVehicles(): Promise<Vehicle[]> {
-    return Array.from(this.vehicles.values());
+    return await db.select().from(vehicles);
   }
 
   async getVehicle(id: number): Promise<Vehicle | undefined> {
-    return this.vehicles.get(id);
+    const result = await db.select().from(vehicles).where(eq(vehicles.id, id));
+    return result[0];
   }
 
   async createVehicle(vehicle: InsertVehicle): Promise<Vehicle> {
-    const id = this.currentVehicleId++;
-    const newVehicle: Vehicle = { ...vehicle, id };
-    this.vehicles.set(id, newVehicle);
-    return newVehicle;
+    const result = await db.insert(vehicles).values(vehicle).returning();
+    return result[0];
   }
 
   // Public Services
   async getPublicServices(): Promise<PublicService[]> {
-    return Array.from(this.publicServices.values());
+    return await db.select().from(publicServices);
   }
 
   async getPublicService(id: number): Promise<PublicService | undefined> {
-    return this.publicServices.get(id);
+    const result = await db.select().from(publicServices).where(eq(publicServices.id, id));
+    return result[0];
   }
 
   async createPublicService(service: InsertPublicService): Promise<PublicService> {
-    const id = this.currentPublicServiceId++;
-    const newService: PublicService = { ...service, id };
-    this.publicServices.set(id, newService);
-    return newService;
+    const result = await db.insert(publicServices).values(service).returning();
+    return result[0];
   }
 
   // Leisure Spots
   async getLeisureSpots(): Promise<LeisureSpot[]> {
-    return Array.from(this.leisureSpots.values());
+    return await db.select().from(leisureSpots);
   }
 
   async getLeisureSpot(id: number): Promise<LeisureSpot | undefined> {
-    return this.leisureSpots.get(id);
+    const result = await db.select().from(leisureSpots).where(eq(leisureSpots.id, id));
+    return result[0];
   }
 
   async createLeisureSpot(spot: InsertLeisureSpot): Promise<LeisureSpot> {
-    const id = this.currentLeisureSpotId++;
-    const newSpot: LeisureSpot = { ...spot, id };
-    this.leisureSpots.set(id, newSpot);
-    return newSpot;
-  }
-
-  // Seed initial data
-  private seedServiceCategories() {
-    const categories: InsertServiceCategory[] = [
-      { name: "Pintores", icon: "paint-roller", slug: "pintores" },
-      { name: "Encanadores", icon: "wrench", slug: "encanadores" },
-      { name: "Engenheiros", icon: "hard-hat", slug: "engenheiros" },
-      { name: "Manicures", icon: "hand-sparkles", slug: "manicures" },
-      { name: "Cuidadores", icon: "user-nurse", slug: "cuidadores" },
-      { name: "Pedreiros", icon: "hammer", slug: "pedreiros" },
-    ];
-
-    categories.forEach((category) => {
-      this.createServiceCategory(category);
-    });
+    const result = await db.insert(leisureSpots).values(spot).returning();
+    return result[0];
   }
 }
 
-export const storage = new MemStorage();
+// Inicializa o armazenamento com algumas categorias de serviço
+async function seedServiceCategories() {
+  const storage = new DbStorage();
+  
+  const categories: InsertServiceCategory[] = [
+    { name: "Pintores", icon: "paint-roller", slug: "pintores" },
+    { name: "Encanadores", icon: "wrench", slug: "encanadores" },
+    { name: "Engenheiros", icon: "hard-hat", slug: "engenheiros" },
+    { name: "Manicures", icon: "hand-sparkles", slug: "manicures" },
+    { name: "Cuidadores", icon: "user-nurse", slug: "cuidadores" },
+    { name: "Pedreiros", icon: "hammer", slug: "pedreiros" },
+  ];
+
+  for (const category of categories) {
+    try {
+      await storage.createServiceCategory(category);
+    } catch (error) {
+      console.error(`Error seeding category ${category.name}:`, error);
+    }
+  }
+}
+
+// Exporta a instância do armazenamento
+export const storage = new DbStorage();
+
+// Executa o seed das categorias de serviço
+seedServiceCategories();

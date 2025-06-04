@@ -1,195 +1,138 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "wouter";
-import { Menu, X, Search, ChevronDown, User, Thermometer } from "lucide-react";
+import { Menu, X, UserPlus, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Temperature from "@/components/ui/temperature";
+import { AuthButtons } from '@/components/auth/AuthButtons';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 bg-white shadow-md z-50">
-      <div className="container mx-auto px-4">
-        {/* Top Bar Mobile */}
-        <div className="flex items-center justify-between py-3 lg:hidden">
-          <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center">
-              <span className="text-primary text-xl font-bold">Bicas Fácil</span>
-            </Link>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Temperature />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMobileMenu}
-              aria-label="Menu"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
-        </div>
+    <header className="sticky top-0 bg-white shadow-md z-50 w-full">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center">
+            <span className="text-2xl font-bold text-primary">Bicas Fácil</span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center justify-between py-3">
-          <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center">
-              <span className="text-primary text-2xl font-bold">Bicas Fácil</span>
+          {/* Menu Desktop */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link href="/servicos" className="text-gray-700 hover:text-primary">
+              Serviços
             </Link>
-          </div>
-          
-          <nav className="hidden lg:flex space-x-6">
-            <div className="group relative">
-              <Button variant="ghost" className="flex items-center gap-1">
-                Serviços <ChevronDown className="h-4 w-4" />
-              </Button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg p-2 hidden group-hover:block">
-                <Link href="#pintores" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Pintores
-                </Link>
-                <Link href="#encanadores" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Encanadores
-                </Link>
-                <Link href="#engenheiros" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Engenheiros
-                </Link>
-                <Link href="#manicures" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Manicures
-                </Link>
-                <Link href="/servicos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Ver todos
-                </Link>
-              </div>
-            </div>
-            <div className="group relative">
-              <Button variant="ghost" className="flex items-center gap-1">
-                Imóveis <ChevronDown className="h-4 w-4" />
-              </Button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg p-2 hidden group-hover:block">
-                <Link href="/imoveis/venda" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  À venda
-                </Link>
-                <Link href="/imoveis/aluguel" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Para alugar
-                </Link>
-                <Link href="/imoveis/lancamentos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Lançamentos
-                </Link>
-              </div>
-            </div>
-            <Button variant="ghost" asChild>
-              <Link href="/veiculos">Veículos</Link>
-            </Button>
-            <Button variant="ghost" asChild>
-              <Link href="/loja">Loja</Link>
-            </Button>
-            <Button variant="ghost" asChild>
-              <Link href="/ai-hub">IA Hub</Link>
-            </Button>
-            <div className="group relative">
-              <Button variant="ghost" className="flex items-center gap-1">
-                Mais <ChevronDown className="h-4 w-4" />
-              </Button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg p-2 hidden group-hover:block">
-                <Link href="/profissionais" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Profissionais
-                </Link>
-                <Link href="/orgaos-publicos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Órgãos Públicos
-                </Link>
-                <Link href="/educacao" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Educação
-                </Link>
-                <Link href="/lazer" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Lazer
-                </Link>
-                <Link href="/saude" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Saúde
-                </Link>
-                <Link href="/cargos-publicos" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                  Cargos Públicos
-                </Link>
-              </div>
-            </div>
+            <Link href="/imoveis" className="text-gray-700 hover:text-primary">
+              Imóveis
+            </Link>
+            <Link href="/veiculos" className="text-gray-700 hover:text-primary">
+              Veículos
+            </Link>
+            <Link href="/lojas" className="text-gray-700 hover:text-primary">
+              Lojas
+            </Link>
+            <Link href="/ia-hub" className="text-gray-700 hover:text-primary">
+              IA Hub
+            </Link>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="text-gray-700 hover:text-primary">
+                  Outros
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Outros Serviços</DropdownMenuLabel>
+                <DropdownMenuItem asChild>
+                  <Link href="/servicos-publicos">Serviços Públicos</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/rh">Recursos Humanos</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
-          
+
+          {/* Botões de Ação */}
           <div className="flex items-center space-x-4">
             <Temperature />
-            <Button variant="outline" asChild>
-              <Link href="/cadastrar-profissional">
-                Cadastrar Profissional
-              </Link>
-            </Button>
-            <Button variant="ghost" className="flex items-center gap-1" asChild>
-              <Link href="/login">
-                <User className="h-4 w-4 mr-1" /> Entrar
-              </Link>
-            </Button>
+            <div className="hidden md:flex space-x-2">
+              <Button variant="outline" asChild>
+                <Link href="/cadastrar" className="flex items-center">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Cadastrar
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link href="/login" className="flex items-center">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Entrar
+                </Link>
+              </Button>
+            </div>
+
+            {/* Botão do Menu Mobile */}
+            <button
+              className="md:hidden p-2 rounded-md text-gray-700 hover:text-primary"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Navigation Menu */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-200">
-          <div className="container mx-auto px-4 py-3">
-            <div className="grid grid-cols-2 gap-2">
-              <Link href="/servicos" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
+        {/* Menu Mobile */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link href="/servicos" className="block px-3 py-2 text-gray-700 hover:text-primary">
                 Serviços
               </Link>
-              <Link href="/imoveis" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/imoveis" className="block px-3 py-2 text-gray-700 hover:text-primary">
                 Imóveis
               </Link>
-              <Link href="/veiculos" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/veiculos" className="block px-3 py-2 text-gray-700 hover:text-primary">
                 Veículos
               </Link>
-              <Link href="/loja" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Loja
+              <Link href="/lojas" className="block px-3 py-2 text-gray-700 hover:text-primary">
+                Lojas
               </Link>
-              <Link href="/ai-hub" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/ia-hub" className="block px-3 py-2 text-gray-700 hover:text-primary">
                 IA Hub
               </Link>
-              <Link href="/midia" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Mídia
+              <Link href="/servicos-publicos" className="block px-3 py-2 text-gray-700 hover:text-primary">
+                Serviços Públicos
               </Link>
-              <Link href="/profissionais" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Profissionais
+              <Link href="/rh" className="block px-3 py-2 text-gray-700 hover:text-primary">
+                Recursos Humanos
               </Link>
-              <Link href="/orgaos-publicos" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Órgãos Públicos
-              </Link>
-              <Link href="/educacao" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Educação
-              </Link>
-              <Link href="/lazer" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Lazer
-              </Link>
-              <Link href="/saude" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Saúde
-              </Link>
-              <Link href="/cargos-publicos" className="text-gray-700 py-2 px-3 hover:bg-gray-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-                Cargos Públicos
-              </Link>
-            </div>
-            <div className="mt-4 flex flex-col space-y-2">
-              <Button variant="outline" asChild>
-                <Link href="/cadastrar-profissional" onClick={() => setMobileMenuOpen(false)}>
-                  Cadastrar Profissional
-                </Link>
-              </Button>
-              <Button variant="ghost" className="flex items-center justify-center gap-1" asChild>
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <User className="h-4 w-4 mr-1" /> Entrar
-                </Link>
-              </Button>
+              <div className="pt-4 space-y-2">
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href="/cadastrar" className="flex items-center justify-center">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Cadastrar
+                  </Link>
+                </Button>
+                <Button className="w-full" asChild>
+                  <Link href="/login" className="flex items-center justify-center">
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Entrar
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </header>
   );
 };

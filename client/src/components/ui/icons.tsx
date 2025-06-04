@@ -1,11 +1,11 @@
 import { 
-  PaintRoller, 
+  Paintbrush, 
   Wrench, 
   HardHat, 
-  HandMetal, 
+  Hand, 
   UserRound,
   Hammer,
-  Building,
+  Building2,
   Scale,
   ShoppingBasket,
   HelpCircle
@@ -13,13 +13,13 @@ import {
 
 // Add any other icons you need here
 export const Icons = {
-  'paint-roller': PaintRoller,
+  'paint-roller': Paintbrush,
   'wrench': Wrench,
   'hard-hat': HardHat,
-  'hand-sparkles': HandMetal,
+  'hand-sparkles': Hand,
   'user-nurse': UserRound,
   'hammer': Hammer,
-  'building': Building,
+  'building': Building2,
   'balance-scale': Scale,
   'shopping-basket': ShoppingBasket,
   // Default fallback icon

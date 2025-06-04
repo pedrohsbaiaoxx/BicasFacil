@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
 import { ServiceCategory } from "@/types";
 import CategoryCard from "@/components/common/CategoryCard";
 import { serviceCategories as fallbackData } from "@/lib/data";
-import { ChevronRight } from "lucide-react";
 import { Icons } from "@/components/ui/icons";
 
 const ServiceCategories = () => {
@@ -15,11 +13,8 @@ const ServiceCategories = () => {
   return (
     <section className="py-10 bg-gray-50" id="categories">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 font-sans">Prestadores de Serviços</h2>
-          <Link href="/servicos" className="text-primary hover:text-primary-700 mt-2 md:mt-0 font-medium flex items-center">
-            Ver todas categorias <ChevronRight className="ml-1 h-4 w-4" />
-          </Link>
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 font-sans text-center">Prestadores de Serviços</h2>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
