@@ -1,6 +1,13 @@
-import { pgTable, text, serial, integer, boolean, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, doublePrecision, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+// Enum para tipos de usuário
+export const UserRole = {
+  ADMIN: 'admin',
+  COMPANY: 'company',
+  USER: 'user',
+} as const;
 
 // User model
 export const users = pgTable("users", {
@@ -12,8 +19,8 @@ export const users = pgTable("users", {
   phone: text("phone"),
   address: text("address"),
   profileImage: text("profile_image"),
-  role: text("role").default("user"),
-  createdAt: text("created_at").notNull(),
+  role: text("role", { enum: [UserRole.ADMIN, UserRole.COMPANY, UserRole.USER] }).default(UserRole.USER),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Service Categories model
@@ -143,3 +150,19 @@ export type InsertProperty = z.infer<typeof insertPropertySchema>;
 export type InsertVehicle = z.infer<typeof insertVehicleSchema>;
 export type InsertPublicService = z.infer<typeof insertPublicServiceSchema>;
 export type InsertLeisureSpot = z.infer<typeof insertLeisureSpotSchema>;
+
+// Schemas de validação
+export const loginSchema = z.object({
+  username: z.string().min(3).max(50),
+  password: z.string().min(6).max(100),
+});
+
+export const registerSchema = z.object({
+  username: z.string().min(3).max(50),
+  password: z.string().min(6).max(100),
+  name: z.string().min(2).max(100),
+  email: z.string().email(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  role: z.enum([UserRole.COMPANY, UserRole.USER]).default(UserRole.USER),
+});

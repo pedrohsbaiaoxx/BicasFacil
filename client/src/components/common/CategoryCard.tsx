@@ -7,7 +7,7 @@ interface CategoryCardProps {
 }
 
 const CategoryCard = ({ category }: CategoryCardProps) => {
-  const IconComponent = Icons[category.icon] || Icons.help;
+  const IconComponent = Icons[category.icon as keyof typeof Icons] || Icons.help;
 
   return (
     <Link
@@ -18,9 +18,6 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
         <IconComponent className="h-6 w-6" />
       </div>
       <h3 className="font-medium text-gray-800">{category.name}</h3>
-      <p className="text-sm text-gray-500 mt-1">
-        {category.professionalCount || 0} profissionais
-      </p>
     </Link>
   );
 };
