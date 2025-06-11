@@ -1,55 +1,38 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import pkg from 'pg';
-import { config } from './config';
+import { Pool } from 'pg';
+import * as dotenv from 'dotenv';
 
-const { Pool } = pkg;
+dotenv.config();
 
-const pool = new Pool({
-  connectionString: config.databaseUrl,
-  ssl: {
-    rejectUnauthorized: false
+const runMigration = async () => {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL não está definida no arquivo .env');
   }
-});
 
-const db = drizzle(pool);
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
 
-async function dropTables() {
-  console.log('Dropping existing tables...');
+  const db = drizzle(pool);
+
+  console.log('Iniciando migração...');
   
   try {
-    await pool.query(`
-      DROP TABLE IF EXISTS 
-        leisure_spots,
-        products,
-        professionals,
-        properties,
-        public_services,
-        service_categories,
-        vehicles,
-        users
-      CASCADE;
-    `);
-    console.log('Tables dropped successfully');
+    await migrate(db, { migrationsFolder: 'drizzle' });
+    console.log('Migração concluída com sucesso!');
   } catch (error) {
-    console.error('Error dropping tables:', error);
-    process.exit(1);
+    console.error('Erro durante a migração:', error);
+    throw error;
+  } finally {
+    await pool.end();
   }
-}
+};
 
-async function main() {
-  console.log('Running migrations...');
-  
-  try {
-    await dropTables();
-    await migrate(db, { migrationsFolder: './drizzle' });
-    console.log('Migrations completed successfully');
-  } catch (error) {
-    console.error('Error running migrations:', error);
-    process.exit(1);
-  }
-  
-  await pool.end();
-}
-
-main(); 
+runMigration().catch((err) => {
+  console.error('Erro ao executar migração:', err);
+  process.exit(1);
+}); 
