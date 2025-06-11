@@ -8,11 +8,14 @@ import {
   Building2,
   Scale,
   ShoppingBasket,
-  HelpCircle
+  HelpCircle,
+  LucideIcon
 } from "lucide-react";
 
+type IconName = 'paint-roller' | 'wrench' | 'hard-hat' | 'hand-sparkles' | 'user-nurse' | 'hammer' | 'building' | 'balance-scale' | 'shopping-basket' | 'help';
+
 // Add any other icons you need here
-export const Icons = {
+export const Icons: Record<IconName, LucideIcon> = {
   'paint-roller': Paintbrush,
   'wrench': Wrench,
   'hard-hat': HardHat,

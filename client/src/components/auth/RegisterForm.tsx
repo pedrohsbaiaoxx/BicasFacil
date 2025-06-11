@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, UserRole } from '@shared/schema';
+import { registerSchema } from '@/lib/schema';
 import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,10 @@ export function RegisterForm({ type = 'user' }: RegisterFormProps) {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: type === 'company' ? UserRole.COMPANY : UserRole.USER,
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
@@ -39,7 +42,10 @@ export function RegisterForm({ type = 'user' }: RegisterFormProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          role: type === 'company' ? 'COMPANY' : 'USER',
+        }),
         credentials: 'include',
       });
 
@@ -70,32 +76,6 @@ export function RegisterForm({ type = 'user' }: RegisterFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Usuário</Label>
-            <Input
-              id="username"
-              type="text"
-              {...register('username')}
-              placeholder="Digite seu usuário"
-            />
-            {errors.username && (
-              <p className="text-sm text-red-500">{errors.username.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              {...register('password')}
-              placeholder="Digite sua senha"
-            />
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="name">Nome {type === 'company' ? 'da Empresa' : 'Completo'}</Label>
             <Input
               id="name"
@@ -122,28 +102,28 @@ export function RegisterForm({ type = 'user' }: RegisterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Telefone</Label>
+            <Label htmlFor="password">Senha</Label>
             <Input
-              id="phone"
-              type="tel"
-              {...register('phone')}
-              placeholder="Digite seu telefone"
+              id="password"
+              type="password"
+              {...register('password')}
+              placeholder="Digite sua senha"
             />
-            {errors.phone && (
-              <p className="text-sm text-red-500">{errors.phone.message}</p>
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="address">Endereço</Label>
+            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
             <Input
-              id="address"
-              type="text"
-              {...register('address')}
-              placeholder="Digite seu endereço"
+              id="confirmPassword"
+              type="password"
+              {...register('confirmPassword')}
+              placeholder="Confirme sua senha"
             />
-            {errors.address && (
-              <p className="text-sm text-red-500">{errors.address.message}</p>
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
             )}
           </div>
 
