@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'wouter';
 import { 
   LayoutDashboard,
@@ -20,6 +20,53 @@ import {
   X
 } from 'lucide-react';
 
+interface FormData {
+  foto: File | null;
+  nome: string;
+  categoria: string;
+  descricao: string;
+  preco: string;
+}
+
+interface ProdutoData {
+  foto: File | null;
+  nome: string;
+  categoria: string;
+  descricao: string;
+  preco: string;
+  tipo: string;
+  caracteristicas: {
+    area: string;
+    quartos: string;
+    marca: string;
+    modelo: string;
+    ano: string;
+  };
+}
+
+interface AgendaData {
+  cliente: string;
+  servico: string;
+  data: string;
+  hora: string;
+  observacao: string;
+}
+
+interface ClienteData {
+  nome: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+}
+
+interface HorarioData {
+  dia: string;
+  inicio: string;
+  fim: string;
+  intervaloInicio: string;
+  intervaloFim: string;
+}
+
 const EmpresaDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showModal, setShowModal] = useState(false);
@@ -30,7 +77,7 @@ const EmpresaDashboard = () => {
   const [tipoEmpresa, setTipoEmpresa] = useState('servico'); // 'servico' ou 'loja'
   
   // Estados para o formulário de serviço
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     foto: null,
     nome: '',
     categoria: '',
@@ -39,13 +86,13 @@ const EmpresaDashboard = () => {
   });
 
   // Estados para o formulário de produto
-  const [produtoData, setProdutoData] = useState({
+  const [produtoData, setProdutoData] = useState<ProdutoData>({
     foto: null,
     nome: '',
     categoria: '',
     descricao: '',
     preco: '',
-    tipo: '', // imovel, carro, etc
+    tipo: '',
     caracteristicas: {
       area: '',
       quartos: '',
@@ -56,7 +103,7 @@ const EmpresaDashboard = () => {
   });
 
   // Estados para o formulário de agendamento
-  const [agendaData, setAgendaData] = useState({
+  const [agendaData, setAgendaData] = useState<AgendaData>({
     cliente: '',
     servico: '',
     data: '',
@@ -65,7 +112,7 @@ const EmpresaDashboard = () => {
   });
 
   // Estados para o formulário de cliente
-  const [clienteData, setClienteData] = useState({
+  const [clienteData, setClienteData] = useState<ClienteData>({
     nome: '',
     email: '',
     telefone: '',
@@ -73,7 +120,7 @@ const EmpresaDashboard = () => {
   });
 
   // Estados para o formulário de horário
-  const [horarioData, setHorarioData] = useState({
+  const [horarioData, setHorarioData] = useState<HorarioData>({
     dia: '',
     inicio: '',
     fim: '',
@@ -81,7 +128,7 @@ const EmpresaDashboard = () => {
     intervaloFim: ''
   });
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -89,8 +136,8 @@ const EmpresaDashboard = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
     if (file) {
       setFormData(prev => ({
         ...prev,
@@ -99,7 +146,7 @@ const EmpresaDashboard = () => {
     }
   };
 
-  const handleAgendaChange = (e) => {
+  const handleAgendaChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setAgendaData(prev => ({
       ...prev,
@@ -107,7 +154,7 @@ const EmpresaDashboard = () => {
     }));
   };
 
-  const handleClienteChange = (e) => {
+  const handleClienteChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setClienteData(prev => ({
       ...prev,
@@ -115,7 +162,7 @@ const EmpresaDashboard = () => {
     }));
   };
 
-  const handleHorarioChange = (e) => {
+  const handleHorarioChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setHorarioData(prev => ({
       ...prev,
@@ -123,7 +170,26 @@ const EmpresaDashboard = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleProdutoChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (name.startsWith('caracteristicas.')) {
+      const caracteristica = name.split('.')[1];
+      setProdutoData(prev => ({
+        ...prev,
+        caracteristicas: {
+          ...prev.caracteristicas,
+          [caracteristica]: value
+        }
+      }));
+    } else {
+      setProdutoData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Aqui você pode adicionar a lógica para salvar o serviço
     console.log('Dados do serviço:', formData);
@@ -137,7 +203,7 @@ const EmpresaDashboard = () => {
     });
   };
 
-  const handleAgendaSubmit = (e) => {
+  const handleAgendaSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados do agendamento:', agendaData);
     setShowAgendaModal(false);
@@ -150,7 +216,7 @@ const EmpresaDashboard = () => {
     });
   };
 
-  const handleClienteSubmit = (e) => {
+  const handleClienteSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados do cliente:', clienteData);
     setShowClienteModal(false);
@@ -162,7 +228,7 @@ const EmpresaDashboard = () => {
     });
   };
 
-  const handleHorarioSubmit = (e) => {
+  const handleHorarioSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados do horário:', horarioData);
     setShowHorarioModal(false);
@@ -175,27 +241,7 @@ const EmpresaDashboard = () => {
     });
   };
 
-  const handleNovoAgendamento = () => {
-    setShowAgendaModal(true);
-  };
-
-  const handleNovoCliente = () => {
-    setShowClienteModal(true);
-  };
-
-  const handleNovoHorario = () => {
-    setShowHorarioModal(true);
-  };
-
-  const handleProdutoChange = (e) => {
-    const { name, value } = e.target;
-    setProdutoData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleProdutoSubmit = (e) => {
+  const handleProdutoSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados do produto:', produtoData);
     setShowProdutoModal(false);
@@ -216,17 +262,22 @@ const EmpresaDashboard = () => {
     });
   };
 
-  const handleTipoProdutoChange = (tipo) => {
+  const handleNovoAgendamento = () => {
+    setShowAgendaModal(true);
+  };
+
+  const handleNovoCliente = () => {
+    setShowClienteModal(true);
+  };
+
+  const handleNovoHorario = () => {
+    setShowHorarioModal(true);
+  };
+
+  const handleTipoProdutoChange = (tipo: string) => {
     setProdutoData(prev => ({
       ...prev,
-      tipo,
-      caracteristicas: {
-        area: '',
-        quartos: '',
-        marca: '',
-        modelo: '',
-        ano: ''
-      }
+      tipo
     }));
   };
 
@@ -810,13 +861,7 @@ const EmpresaDashboard = () => {
                                 type="number"
                                 name="area"
                                 value={produtoData.caracteristicas.area}
-                                onChange={(e) => setProdutoData(prev => ({
-                                  ...prev,
-                                  caracteristicas: {
-                                    ...prev.caracteristicas,
-                                    area: e.target.value
-                                  }
-                                }))}
+                                onChange={handleProdutoChange}
                                 className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm"
                                 placeholder="Área"
                                 required
@@ -830,13 +875,7 @@ const EmpresaDashboard = () => {
                                 type="number"
                                 name="quartos"
                                 value={produtoData.caracteristicas.quartos}
-                                onChange={(e) => setProdutoData(prev => ({
-                                  ...prev,
-                                  caracteristicas: {
-                                    ...prev.caracteristicas,
-                                    quartos: e.target.value
-                                  }
-                                }))}
+                                onChange={handleProdutoChange}
                                 className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm"
                                 placeholder="Nº de quartos"
                                 required
@@ -856,13 +895,7 @@ const EmpresaDashboard = () => {
                                 type="text"
                                 name="marca"
                                 value={produtoData.caracteristicas.marca}
-                                onChange={(e) => setProdutoData(prev => ({
-                                  ...prev,
-                                  caracteristicas: {
-                                    ...prev.caracteristicas,
-                                    marca: e.target.value
-                                  }
-                                }))}
+                                onChange={handleProdutoChange}
                                 className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm"
                                 placeholder="Marca"
                                 required
@@ -876,13 +909,7 @@ const EmpresaDashboard = () => {
                                 type="text"
                                 name="modelo"
                                 value={produtoData.caracteristicas.modelo}
-                                onChange={(e) => setProdutoData(prev => ({
-                                  ...prev,
-                                  caracteristicas: {
-                                    ...prev.caracteristicas,
-                                    modelo: e.target.value
-                                  }
-                                }))}
+                                onChange={handleProdutoChange}
                                 className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm"
                                 placeholder="Modelo"
                                 required
@@ -896,13 +923,7 @@ const EmpresaDashboard = () => {
                                 type="number"
                                 name="ano"
                                 value={produtoData.caracteristicas.ano}
-                                onChange={(e) => setProdutoData(prev => ({
-                                  ...prev,
-                                  caracteristicas: {
-                                    ...prev.caracteristicas,
-                                    ano: e.target.value
-                                  }
-                                }))}
+                                onChange={handleProdutoChange}
                                 className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-sm"
                                 placeholder="Ano"
                                 required

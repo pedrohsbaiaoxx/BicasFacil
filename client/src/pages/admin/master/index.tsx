@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'wouter';
 import { 
   LayoutDashboard,
@@ -22,6 +22,80 @@ import {
   CreditCard
 } from 'lucide-react';
 
+interface Empresa {
+  id: number;
+  nome: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  tipo: string;
+}
+
+interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  tipo: string;
+}
+
+interface EmpresaData {
+  nome: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  tipo: string;
+}
+
+interface UsuarioData {
+  nome: string;
+  email: string;
+  telefone: string;
+  tipo: string;
+}
+
+interface ConfigData {
+  taxaPlataforma: string;
+  diasPagamento: string;
+  emailSuporte: string;
+  telefoneSuporte: string;
+  nomeSistema: string;
+  emailContato: string;
+  endereco: string;
+  facebook: string;
+  instagram: string;
+  notificacoesEmail: boolean;
+  notificacoesPush: boolean;
+  notificacoesNovosUsuarios: boolean;
+  autenticacaoDoisFatores: boolean;
+  senhaAtual: string;
+  novaSenha: string;
+  confirmarSenha: string;
+  chavePix: string;
+  taxaServico: string;
+  metodosPagamento: {
+    cartaoCredito: boolean;
+    pix: boolean;
+    boleto: boolean;
+  };
+}
+
+interface ServicoData {
+  nome: string;
+  categoria: string;
+  descricao: string;
+  preco: string;
+  foto: File | null;
+}
+
+interface PermissaoData {
+  nome: string;
+  descricao: string;
+  permissoes: string[];
+}
+
 const MasterDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('geral');
@@ -32,11 +106,11 @@ const MasterDashboard = () => {
   const [showEditUsuarioModal, setShowEditUsuarioModal] = useState(false);
   const [showServicoModal, setShowServicoModal] = useState(false);
   const [showPermissaoModal, setShowPermissaoModal] = useState(false);
-  const [selectedEmpresa, setSelectedEmpresa] = useState(null);
-  const [selectedUsuario, setSelectedUsuario] = useState(null);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   
   // Estados para o formulário de empresa
-  const [empresaData, setEmpresaData] = useState({
+  const [empresaData, setEmpresaData] = useState<EmpresaData>({
     nome: '',
     cnpj: '',
     email: '',
@@ -46,7 +120,7 @@ const MasterDashboard = () => {
   });
 
   // Estados para o formulário de usuário
-  const [usuarioData, setUsuarioData] = useState({
+  const [usuarioData, setUsuarioData] = useState<UsuarioData>({
     nome: '',
     email: '',
     telefone: '',
@@ -54,7 +128,7 @@ const MasterDashboard = () => {
   });
 
   // Estados para o formulário de configurações
-  const [configData, setConfigData] = useState({
+  const [configData, setConfigData] = useState<ConfigData>({
     taxaPlataforma: '',
     diasPagamento: '',
     emailSuporte: '',
@@ -81,7 +155,7 @@ const MasterDashboard = () => {
   });
 
   // Estados para o formulário de serviço
-  const [servicoData, setServicoData] = useState({
+  const [servicoData, setServicoData] = useState<ServicoData>({
     nome: '',
     categoria: '',
     descricao: '',
@@ -90,14 +164,14 @@ const MasterDashboard = () => {
   });
 
   // Estados para o formulário de permissão
-  const [permissaoData, setPermissaoData] = useState({
+  const [permissaoData, setPermissaoData] = useState<PermissaoData>({
     nome: '',
     descricao: '',
     permissoes: []
   });
 
   // Estados para as listas
-  const [empresas, setEmpresas] = useState([
+  const [empresas, setEmpresas] = useState<Empresa[]>([
     {
       id: 1,
       nome: 'Empresa XYZ',
@@ -109,7 +183,7 @@ const MasterDashboard = () => {
     }
   ]);
 
-  const [usuarios, setUsuarios] = useState([
+  const [usuarios, setUsuarios] = useState<Usuario[]>([
     {
       id: 1,
       nome: 'João Silva',
@@ -119,7 +193,7 @@ const MasterDashboard = () => {
     }
   ]);
 
-  const handleEmpresaChange = (e) => {
+  const handleEmpresaChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setEmpresaData(prev => ({
       ...prev,
@@ -127,7 +201,7 @@ const MasterDashboard = () => {
     }));
   };
 
-  const handleUsuarioChange = (e) => {
+  const handleUsuarioChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setUsuarioData(prev => ({
       ...prev,
@@ -135,15 +209,50 @@ const MasterDashboard = () => {
     }));
   };
 
-  const handleConfigChange = (e) => {
+  const handleConfigChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      if (name.startsWith('metodosPagamento.')) {
+        const metodo = name.split('.')[1];
+        setConfigData(prev => ({
+          ...prev,
+          metodosPagamento: {
+            ...prev.metodosPagamento,
+            [metodo]: checked
+          }
+        }));
+      } else {
+        setConfigData(prev => ({
+          ...prev,
+          [name]: checked
+        }));
+      }
+    } else {
+      setConfigData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleServicoChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setConfigData(prev => ({
+    setServicoData(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handleEmpresaSubmit = (e) => {
+  const handlePermissaoChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setPermissaoData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleEmpresaSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados da empresa:', empresaData);
     setShowEmpresaModal(false);
@@ -157,7 +266,7 @@ const MasterDashboard = () => {
     });
   };
 
-  const handleUsuarioSubmit = (e) => {
+  const handleUsuarioSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados do usuário:', usuarioData);
     setShowUsuarioModal(false);
@@ -169,7 +278,7 @@ const MasterDashboard = () => {
     });
   };
 
-  const handleConfigSubmit = (e) => {
+  const handleConfigSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Configurações:', configData);
     setShowConfigModal(false);
@@ -180,13 +289,13 @@ const MasterDashboard = () => {
     setShowEmpresaModal(true);
   };
 
-  const handleEditarEmpresa = (empresa) => {
+  const handleEditarEmpresa = (empresa: Empresa) => {
     setSelectedEmpresa(empresa);
     setEmpresaData(empresa);
     setShowEditEmpresaModal(true);
   };
 
-  const handleExcluirEmpresa = (empresa) => {
+  const handleExcluirEmpresa = (empresa: Empresa) => {
     if (window.confirm('Tem certeza que deseja excluir esta empresa?')) {
       console.log('Empresa excluída:', empresa);
     }
@@ -197,13 +306,13 @@ const MasterDashboard = () => {
     setShowUsuarioModal(true);
   };
 
-  const handleEditarUsuario = (usuario) => {
+  const handleEditarUsuario = (usuario: Usuario) => {
     setSelectedUsuario(usuario);
     setUsuarioData(usuario);
     setShowEditUsuarioModal(true);
   };
 
-  const handleExcluirUsuario = (usuario) => {
+  const handleExcluirUsuario = (usuario: Usuario) => {
     if (window.confirm('Tem certeza que deseja excluir este usuário?')) {
       console.log('Usuário excluído:', usuario);
     }
@@ -216,15 +325,7 @@ const MasterDashboard = () => {
   };
 
   // Funções para manipulação de serviços
-  const handleServicoChange = (e) => {
-    const { name, value } = e.target;
-    setServicoData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleServicoSubmit = (e) => {
+  const handleServicoSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados do serviço:', servicoData);
     setShowServicoModal(false);
@@ -238,15 +339,7 @@ const MasterDashboard = () => {
   };
 
   // Funções para manipulação de permissões
-  const handlePermissaoChange = (e) => {
-    const { name, value } = e.target;
-    setPermissaoData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handlePermissaoSubmit = (e) => {
+  const handlePermissaoSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados da permissão:', permissaoData);
     setShowPermissaoModal(false);

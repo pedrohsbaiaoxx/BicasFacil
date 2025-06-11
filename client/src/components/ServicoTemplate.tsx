@@ -29,6 +29,13 @@ interface ServicoTemplateProps {
   iconePreco?: React.ReactNode;
 }
 
+interface Filters {
+  rating: string;
+  price: string;
+  location: string;
+  [key: string]: string;
+}
+
 const ServicoTemplate: React.FC<ServicoTemplateProps> = ({
   titulo,
   subtitulo,
@@ -37,7 +44,7 @@ const ServicoTemplate: React.FC<ServicoTemplateProps> = ({
   iconePreco
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     rating: 'all',
     price: 'all',
     location: '',

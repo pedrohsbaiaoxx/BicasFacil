@@ -6,6 +6,10 @@ import { ChevronRight, Building, Phone, Clock, MapPin, ArrowRight } from "lucide
 import { Card, CardContent } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
 
+interface IconMap {
+  [key: string]: React.ComponentType<any>;
+}
+
 const PublicServices = () => {
   const { data: services, isLoading } = useQuery<PublicService[]>({
     queryKey: ['/api/public-services'],
@@ -44,7 +48,7 @@ const PublicServices = () => {
             ))
           ) : (
             services.map((service) => {
-              const IconComponent = Icons[service.icon] || Icons.building;
+              const IconComponent = (Icons as IconMap)[service.icon] || Icons.building;
               
               return (
                 <Card key={service.id} className="shadow-sm hover:shadow-md transition-shadow">

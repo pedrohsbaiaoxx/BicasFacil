@@ -24,7 +24,7 @@ const professionalSchema = z.object({
   description: z.string().min(10, "Descrição deve ter pelo menos 10 caracteres").max(500, "Descrição muito longa"),
   price: z.string().min(1, "Informe o preço do serviço"),
   location: z.string().min(3, "Informe a localização"),
-  available: z.boolean().default(true),
+  available: z.boolean(),
   coverImage: z.string().url("Informe uma URL válida para a imagem").or(z.string().length(0)),
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
   email: z.string().email("E-mail inválido"),
@@ -56,6 +56,7 @@ const ServiceRegister = () => {
       name: "",
       email: "",
       phone: "",
+      categoryId: "",
     },
   });
 
@@ -197,30 +198,18 @@ const ServiceRegister = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Categoria</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Selecione uma categoria" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {categoriesLoading ? (
-                                <SelectItem value="loading" disabled>
-                                  Carregando categorias...
+                              {categories?.map((category) => (
+                                <SelectItem key={category.id} value={category.id.toString()}>
+                                  {category.name}
                                 </SelectItem>
-                              ) : (
-                                categories.map((category) => (
-                                  <SelectItem 
-                                    key={category.id} 
-                                    value={category.id.toString()}
-                                  >
-                                    {category.name}
-                                  </SelectItem>
-                                ))
-                              )}
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -235,11 +224,8 @@ const ServiceRegister = () => {
                         <FormItem>
                           <FormLabel>Título do Serviço</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Pintura Residencial Profissional" {...field} />
+                            <Input placeholder="Ex: Pintura Residencial" {...field} />
                           </FormControl>
-                          <FormDescription>
-                            Um título chamativo para seu serviço
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -252,10 +238,24 @@ const ServiceRegister = () => {
                         <FormItem>
                           <FormLabel>Preço</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: R$ 50,00/hora ou A partir de R$ 100,00" {...field} />
+                            <Input placeholder="Ex: R$ 100,00" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="coverImage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL da Imagem de Capa</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://..." {...field} />
                           </FormControl>
                           <FormDescription>
-                            Valor cobrado pelo serviço (por hora, por m², valor fixo, etc.)
+                            Opcional. URL de uma imagem para seu perfil
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -268,9 +268,11 @@ const ServiceRegister = () => {
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                           <div className="space-y-0.5">
-                            <FormLabel className="text-base">Disponibilidade</FormLabel>
+                            <FormLabel className="text-base">
+                              Disponível para Atendimento
+                            </FormLabel>
                             <FormDescription>
-                              Indique se você está disponível para novos serviços
+                              Marque se você está disponível para receber novos clientes
                             </FormDescription>
                           </div>
                           <FormControl>
@@ -291,33 +293,14 @@ const ServiceRegister = () => {
                           <FormItem>
                             <FormLabel>Descrição do Serviço</FormLabel>
                             <FormControl>
-                              <Textarea 
-                                placeholder="Descreva detalhadamente os serviços que você oferece..." 
-                                className="min-h-[120px]" 
+                              <Textarea
+                                placeholder="Descreva seus serviços, experiência e diferenciais..."
+                                className="min-h-[120px]"
                                 {...field}
                               />
                             </FormControl>
                             <FormDescription>
-                              Explique com detalhes o que você faz, sua experiência e diferenciais
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <FormField
-                        control={form.control}
-                        name="coverImage"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>URL da Imagem de Capa (opcional)</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://exemplo.com/imagem.jpg" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              URL de uma imagem que represente seu trabalho
+                              Seja detalhado para que os clientes entendam melhor seu trabalho
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -326,18 +309,20 @@ const ServiceRegister = () => {
                     </div>
                   </div>
 
-                  <div className="flex justify-end mt-8">
-                    <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Cadastrando...
-                        </>
-                      ) : (
-                        "Cadastrar Serviço"
-                      )}
-                    </Button>
-                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Cadastrando...
+                      </>
+                    ) : (
+                      "Cadastrar Perfil Profissional"
+                    )}
+                  </Button>
                 </form>
               </Form>
             </CardContent>
