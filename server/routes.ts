@@ -3,8 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import OpenAI from "openai";
 import { config } from "./config";
-import OpenAI from 'openai';
 import {
   insertUserSchema,
   insertServiceCategorySchema,
@@ -16,13 +16,16 @@ import {
   insertLeisureSpotSchema
 } from "@shared/schema";
 
-// Inicializar cliente OpenAI
-const openai = new OpenAI({
-  apiKey: config.openai.apiKey,
-});
-
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
+
+  // Inicializar cliente OpenAI apenas quando necessário
+  let openai: OpenAI | null = null;
+  if (config.openai.apiKey) {
+    openai = new OpenAI({
+      apiKey: config.openai.apiKey,
+    });
+  }
 
   // Get all service categories
   app.get("/api/service-categories", async (req, res) => {
@@ -422,7 +425,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Mensagem é obrigatória" });
       }
 
-      if (!config.openai.apiKey) {
+      if (!config.openai.apiKey || !openai) {
         console.error("ChatGPT API - API key não configurada");
         return res.status(500).json({ message: "API key do OpenAI não configurada" });
       }
