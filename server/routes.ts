@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { config } from "./config";
+import OpenAI from 'openai';
 import {
   insertUserSchema,
   insertServiceCategorySchema,
@@ -14,6 +15,11 @@ import {
   insertPublicServiceSchema,
   insertLeisureSpotSchema
 } from "@shared/schema";
+
+// Inicializar cliente OpenAI
+const openai = new OpenAI({
+  apiKey: config.openai.apiKey,
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -401,6 +407,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error registering user:", error);
       res.status(500).json({ message: "Failed to register user" });
+    }
+  });
+
+  // ChatGPT API Routes
+  app.post("/api/chat", async (req, res) => {
+    try {
+      const { message, context = "BicasFacil - Plataforma de serviços e produtos" } = req.body;
+
+      console.log("ChatGPT API - Recebida mensagem:", message);
+      console.log("ChatGPT API - API Key configurada:", !!config.openai.apiKey);
+
+      if (!message) {
+        return res.status(400).json({ message: "Mensagem é obrigatória" });
+      }
+
+      if (!config.openai.apiKey) {
+        console.error("ChatGPT API - API key não configurada");
+        return res.status(500).json({ message: "API key do OpenAI não configurada" });
+      }
+
+      console.log("ChatGPT API - Fazendo requisição para OpenAI...");
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: `Você é um assistente virtual do BicasFacil, uma plataforma que conecta pessoas a serviços, produtos, imóveis e veículos em Bicas e região. 
+            Seja prestativo, amigável e sempre tente ajudar os usuários a encontrar o que precisam. 
+            Responda de forma natural e útil. Contexto: ${context}`
+          },
+          {
+            role: "user",
+            content: message
+          }
+        ],
+        max_tokens: 500,
+        temperature: 0.7,
+      });
+
+      const response = completion.choices[0]?.message?.content || "Desculpe, não consegui processar sua mensagem.";
+
+      console.log("ChatGPT API - Resposta recebida:", response.substring(0, 100) + "...");
+
+      res.json({
+        message: response,
+        usage: completion.usage
+      });
+
+    } catch (error) {
+      console.error("Erro na API do ChatGPT:", error);
+      console.error("Detalhes do erro:", {
+        message: (error as Error).message,
+        stack: (error as Error).stack,
+        name: (error as Error).name
+      });
+      
+      res.status(500).json({ 
+        message: "Erro ao processar sua mensagem. Tente novamente mais tarde.",
+        error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      });
+    }
+  });
+
+  // Rota para verificar status da API
+  app.get("/api/chat/status", async (req, res) => {
+    try {
+      if (!config.openai.apiKey) {
+        return res.status(500).json({ 
+          status: "error", 
+          message: "API key do OpenAI não configurada" 
+        });
+      }
+
+      res.json({ 
+        status: "ok", 
+        message: "API do ChatGPT funcionando corretamente" 
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        status: "error", 
+        message: "Erro ao verificar status da API" 
+      });
     }
   });
 

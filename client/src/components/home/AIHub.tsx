@@ -1,16 +1,57 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Send, BrainCircuit } from "lucide-react";
+import { ArrowRight, Send, BrainCircuit, Loader2 } from "lucide-react";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 const AIHub = () => {
   const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [response, setResponse] = useState("");
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle AI query logic here
-    console.log("AI query:", query);
+    if (!query.trim()) return;
+
+    setIsLoading(true);
+    setResponse("");
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: query,
+          context: "BicasFacil - Plataforma de serviços e produtos em Bicas"
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro ao processar mensagem');
+      }
+
+      setResponse(data.message);
+      toast({
+        title: "Resposta recebida!",
+        description: "O assistente AI respondeu sua pergunta.",
+      });
+
+    } catch (error) {
+      console.error('Erro na API:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível processar sua pergunta. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,17 +72,31 @@ const AIHub = () => {
                     className="w-full bg-white/10 border border-white/20 text-white placeholder:text-white/70 pr-12 ring-offset-white/20 focus-visible:ring-white/40"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    disabled={isLoading}
                   />
                   <Button
                     type="submit"
                     variant="ghost"
                     size="icon"
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/90 hover:text-white hover:bg-transparent"
+                    disabled={isLoading}
                   >
-                    <Send className="h-4 w-4" />
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </form>
+              
+              {response && (
+                <div className="mt-4 p-4 bg-white/10 rounded-lg">
+                  <h3 className="font-semibold mb-2">Resposta:</h3>
+                  <p className="text-white/90 text-sm">{response}</p>
+                </div>
+              )}
+
               <div className="mt-4">
                 <Button variant="link" className="text-white hover:text-white/90 p-0 h-auto" asChild>
                   <Link href="/ai-hub" className="flex items-center">
