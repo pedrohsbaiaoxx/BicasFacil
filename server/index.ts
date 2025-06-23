@@ -6,9 +6,22 @@ import cors from "cors";
 
 const app = express();
 
+// Configuração para proxy
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(config.cors));
+
+// Middleware para configurar headers de proxy
+app.use((req, res, next) => {
+  // Configurar headers para funcionar com proxy
+  res.setHeader('X-Forwarded-Proto', req.headers['x-forwarded-proto'] || 'http');
+  res.setHeader('X-Forwarded-Host', req.headers['x-forwarded-host'] || req.headers.host || 'localhost');
+  res.setHeader('X-Forwarded-For', req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown');
+  
+  next();
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -58,8 +71,13 @@ app.use((req, res, next) => {
       serveStatic(app);
     }
 
-    server.listen(config.port, '127.0.0.1', () => {
-      log(`Server running at http://127.0.0.1:${config.port}`);
+    // Configuração para aceitar conexões de qualquer IP (necessário para proxy)
+    const host = config.nodeEnv === 'production' ? '0.0.0.0' : '127.0.0.1';
+    
+    server.listen(config.port, host, () => {
+      log(`Server running at http://${host}:${config.port}`);
+      log(`Production mode: ${config.nodeEnv === 'production' ? 'Yes' : 'No'}`);
+      log(`CORS origins: ${config.cors.origin.join(', ')}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
